@@ -57,7 +57,7 @@ jobs:
           CI: true
         run: npm test
 
-  build:
+    build:
     needs:
       - lint
       - test
@@ -67,6 +67,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.14'
+          cache: npm
+          cache-dependency-path: 'starter/frontend/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: starter/frontend
+        run: npm ci
+
+      - name: Build frontend application
+        working-directory: starter/frontend
+        env:
+          REACT_APP_MOVIE_API_URL: http://localhost:5000
+        run: npm run build
 
       - name: Build Docker image
         working-directory: starter/frontend
